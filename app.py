@@ -1,5 +1,6 @@
 import requests
 import math
+import logging
 from flask import Flask, make_response, jsonify, request, render_template
 
 app = Flask(__name__)
@@ -52,7 +53,7 @@ def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_mil
 
 
 def get_nearest_locations(lat, lon, search_radius):
-    print search_radius
+    app.logger.info(search_radius)
     if search_radius > 1.0:
         return {}
     
@@ -71,7 +72,7 @@ def get_nearest_locations(lat, lon, search_radius):
         '$limit': 5
     }    
     sfdata_response = requests.get('http://data.sfgov.org/resource/w969-5mn4.json', params=sfdata_query_params)
-    print sfdata_response.json()
+    app.logger.info(sfdata_response.json())
     if not sfdata_response.json():
         current_search_radius += 0.1
         return get_nearest_locations(current_lat, current_long, current_search_radius)
