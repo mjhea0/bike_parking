@@ -1,0 +1,25 @@
+html, body {
+    margin: 0;
+    padding: 0;
+	height: 100%;
+}
+
+#page-footer {
+	margin-bottom: 30px;
+}
+
+/* Fix Bootstrap, Google Maps CSS issues */
+#map-canvas {
+	height: 50%;
+	margin-top: -20px;
+	margin-bottom: 5px;
+}
+
+#map-canvas img {
+	max-width: none;
+}
+
+#map-canvas label {
+	width: auto;
+	display: inline;
+}
