@@ -1,7 +1,7 @@
 function LocationsViewModel() {
 	var self = this;
 	self.mapService = MapService;
-	self.directionsURI = 'http://localhost:5000/api/v1.0/directions';
+	self.directionsURI = 'http://stormy-wave-5893.herokuapp.com/api/v1.0/directions';
 	self.locations = ko.observableArray();
 	self.currentLocation = {};
 		
