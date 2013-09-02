@@ -95,4 +95,8 @@ def create_directions():
 
 
 if __name__ == "__main__":
+    stream_handler = logging.StreamHandler()
+    app.logger.addHandler(stream_handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('app startup')
     app.run(debug=True)
