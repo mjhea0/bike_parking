@@ -14,9 +14,16 @@ def index():
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
-# BoundingBox implementation taken from:
-# http://stackoverflow.com/questions/1648917/given-a-latitude-and-longitude-and-distance-i-want-to-find-a-bounding-box
+
+@app.errorhandler(500)
+def internal_error(error):
+    return make_response(jsonify({'error': 'Internal error'}), 500)
+
 class BoundingBox(object):
+    '''
+    BoundingBox implementation taken from:
+http://stackoverflow.com/questions/1648917/given-a-latitude-and-longitude-and-distance-i-want-to-find-a-bounding-box
+    '''
     def __init__(self, *args, **kwargs):
         self.lat_min = None
         self.lon_min = None
@@ -52,15 +59,20 @@ def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_mil
     return box
 
 
-def get_nearest_locations(lat, lon, search_radius):
-    app.logger.info(search_radius)
-    if search_radius > 1.0:
+def get_nearest_locations(lat, lon, search_distance):
+    '''
+    This method constructs a query to SFData for bicycle parking within the search distance.
+    We start with a 0.1 mile half side and increase the distance by 0.1 everytime we don't find
+    something.
+    Return the first time we get results.
+    '''
+    if search_distance > 1.0:
         return {}
     
     current_lat = lat
     current_long = lon
-    current_search_radius = search_radius
-    bounding_box = get_bounding_box(current_lat, current_long, current_search_radius) 
+    current_search_distance = search_distance
+    bounding_box = get_bounding_box(current_lat, current_long, current_search_distance) 
     north = str(bounding_box.lat_max)
     east = str(bounding_box.lon_min)
     south = str(bounding_box.lat_min)
@@ -74,14 +86,18 @@ def get_nearest_locations(lat, lon, search_radius):
     sfdata_response = requests.get('http://data.sfgov.org/resource/w969-5mn4.json', params=sfdata_query_params)
     app.logger.info(sfdata_response.json())
     if not sfdata_response.json():
-        current_search_radius += 0.1
-        return get_nearest_locations(current_lat, current_long, current_search_radius)
+        current_search_distance += 0.1
+        return get_nearest_locations(current_lat, current_long, current_search_distance)
     else:
         return sfdata_response.json()
 
 
 @app.route('/api/v1.0/directions', methods=['POST'])
 def create_directions():
+    '''
+    Simple endpoint which takes the latitude/longitude from the POST request
+    and returns the nearest bicycle parking locations near that point.
+    '''
     if not request.json:
         abort(400)
     if not 'latitude' in request.json:
@@ -89,8 +105,8 @@ def create_directions():
     if not 'longitude' in request.json:
         abort(400)
     
-    initial_search_radius = 0.1
-    result = get_nearest_locations(request.json['latitude'], request.json['longitude'], initial_search_radius)
+    initial_search_distance = 0.1
+    result = get_nearest_locations(request.json['latitude'], request.json['longitude'], initial_search_distance)
     return jsonify({'result': result})
 
 
