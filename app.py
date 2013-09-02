@@ -115,4 +115,4 @@ if __name__ == "__main__":
     app.logger.addHandler(stream_handler)
     app.logger.setLevel(logging.INFO)
     app.logger.info('app startup')
-    app.run(debug=True)
+    app.run()
