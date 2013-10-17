@@ -1,3 +1,5 @@
+*NOTE*: Currently not working. SFData changed the api I'm using after this commit.
+
 Find the nearest bicycle parking in SF
 ----------
 
