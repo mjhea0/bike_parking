@@ -1,4 +1,4 @@
-*NOTE*: Currently not working. SFData changed the api I'm using after this commit.
+*NOTE*: Currently not working. After this commit, SFData changed the api I'm using.
 
 Find the nearest bicycle parking in SF
 ----------
